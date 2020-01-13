@@ -191,6 +191,17 @@ const eraseFood = function(previousFood) {
   cell.classList.remove('food')
 }
 
+const updateGame = function(game) {
+setInterval(() => {
+    
+  eraseFood(game.previousFood);
+  moveAndDrawSnake(game.snake);
+  game.ifFoodEaten(); 
+  drawFood(game.food);
+  
+  moveAndDrawSnake(game.ghostSnake);
+}, 200);
+}
 
 const main = function() {
 
@@ -205,18 +216,7 @@ const main = function() {
   setup(game);
   drawFood(food);
   
-
-  setInterval(() => {
-    
-    eraseFood(game.previousFood);
-    moveAndDrawSnake(game.snake);
-    game.ifFoodEaten(); 
-    drawFood(game.food);
-    
-    
-    
-    moveAndDrawSnake(ghostSnake);
-  }, 200);
+  updateGame(game);
 
   setInterval(() => {
     let x = Math.random() * 100;
