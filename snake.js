@@ -46,6 +46,10 @@ class Snake {
     this.direction.turnLeft();
   }
 
+  getHeadPosition() {
+    return this.positions[this.positions.length -1];
+  }
+
   // turnRight() {
   //   this.direction.turnRight();
   // }
@@ -86,28 +90,28 @@ class Game {
   }
 
   hasFoodEaten() {
-    return this.snake.positions[2][0] === this.food.position[0] && this.snake.positions[2][1] === this.food.position[1];
+    const [snakeColId, snakeRowId] = [...this.snake.getHeadPosition()];
+    const [foodColId, foodRowId] = this.food.position;
+    
+    return snakeColId === foodColId && snakeRowId === foodRowId;
   }
 
   updateGame() {
-    console.log(this.hasFoodEaten());
-    
     if(this.hasFoodEaten()) {
       this.previousFood = this.food;
       this.food = generateFood();
       this.snake.grow();
       this.score++;
     }
-  }
-
-  getGameStatus() {
     this.snake.move();
     this.ghostSnake.move();
-    this.updateGame();
-
-    return {snake: this.snake, previousFood: this.previousFood, food: this.food,  ghostSnake: this.ghostSnake, score: this.score};
   }
 
+  getStatus() {
+    this.updateGame();
+    return {snake: this.snake, previousFood: this.previousFood, 
+      food: this.food,  ghostSnake: this.ghostSnake, score: this.score};
+  }
 }
 
 
@@ -117,7 +121,7 @@ const NUM_OF_ROWS = 60;
 const GRID_ID = 'grid';
 
 const getGrid = () => document.getElementById(GRID_ID);
-const getCellId = (colId, rowId) => colId + '_' + rowId;
+const getCellId = (colId, rowId) => `${colId}_${rowId}`;
 
 const getCell = (colId, rowId) =>
   document.getElementById(getCellId(colId, rowId));
@@ -211,20 +215,21 @@ const drawScore = function(score) {
 };
 
 const draw = function(gameStatus) {
-  eraseTail(gameStatus.snake);
-  drawSnake(gameStatus.snake);
+  const {snake, previousFood, food, ghostSnake, score} = {...gameStatus} 
+  eraseTail(snake);
+  drawSnake(snake);
 
-  eraseFood(gameStatus.previousFood);
-  drawFood(gameStatus.food);
+  eraseFood(previousFood);
+  drawFood(food);
 
-  eraseTail(gameStatus.ghostSnake);
-  drawSnake(gameStatus.ghostSnake);
+  eraseTail(ghostSnake);
+  drawSnake(ghostSnake);
 
-  drawScore(gameStatus.score);
+  drawScore(score);
 }
 
 const updateGame = function(game) {
-  const gameStatus = game.getGameStatus(game);
+  const gameStatus = game.getStatus();
   draw(gameStatus);
 }
 
