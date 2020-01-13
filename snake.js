@@ -58,13 +58,17 @@ class Snake {
 
     this.positions.push([headX + deltaX, headY + deltaY]);
   }
+
+  grow() {
+    this.positions.unshift(this.previousTail);
+  }
+
 }
 
 class Food {
   constructor(colId, rowId) {
     this.colId = colId;
     this.rowId = rowId;
-    
   }
 
   get position() {
@@ -78,23 +82,32 @@ class Game {
     this.ghostSnake = ghostSnake;
     this.food = food;
     this.previousFood = new Food(0, 0);
+    this.score = 0;
   }
 
-  isFoodEaten() {
-    if(this.snake.positions[2][0] === this.food.position[0] && this.snake.positions[2][1] === this.food.position[1]) {
-      
+  hasFoodEaten() {
+    return this.snake.positions[2][0] === this.food.position[0] && this.snake.positions[2][1] === this.food.position[1];
+  }
+
+  updateGame() {
+    console.log(this.hasFoodEaten());
+    
+    if(this.hasFoodEaten()) {
       this.previousFood = this.food;
       this.food = generateFood();
-      this.snake.positions.unshift(this.snake.previousTail);
+      this.snake.grow();
+      this.score++;
     }
   }
 
   getGameStatus() {
     this.snake.move();
     this.ghostSnake.move();
-    this.isFoodEaten()
-    return {snake: this.snake, previousFood: this.previousFood, food: this.food,  ghostSnake: this.ghostSnake};
+    this.updateGame();
+
+    return {snake: this.snake, previousFood: this.previousFood, food: this.food,  ghostSnake: this.ghostSnake, score: this.score};
   }
+
 }
 
 
@@ -164,7 +177,7 @@ const initGhostSnake = () => {
   return new Snake(ghostSnakePosition, new Direction(SOUTH), 'ghost');
 };
 
-const setup = game => {
+const setup = function(game) {
   attachEventListeners(game.snake);
   createGrids();
 
@@ -176,21 +189,26 @@ const  drawFood = function(food) {
   let [colId, rowId] = food.position;
   const cell = getCell(colId, rowId);
   cell.classList.add('food');
-}
+};
 
 const generateFood = function() {
   const posX = Math.round(Math.random() * 99);
   const posY = Math.round(Math.random() * 59);
   
   return new Food(posX,posY);
-}
+};
 
 const eraseFood = function(previousFood) {
   
   let [colId, rowId] = previousFood.position;
   const cell = getCell(colId, rowId);
   cell.classList.remove('food')
-}
+};
+
+const drawScore = function(score) {
+  const scoreBoard = document.getElementById('scoreBoard');
+  scoreBoard.innerText = `score: ${score}`;
+};
 
 const draw = function(gameStatus) {
   eraseTail(gameStatus.snake);
@@ -201,6 +219,8 @@ const draw = function(gameStatus) {
 
   eraseTail(gameStatus.ghostSnake);
   drawSnake(gameStatus.ghostSnake);
+
+  drawScore(gameStatus.score);
 }
 
 const updateGame = function(game) {
