@@ -20,6 +20,10 @@ class Direction {
   turnLeft() {
     this.heading = (this.heading + 1) % 4;
   }
+
+  turnRight() {
+    this.heading = (this.heading +3) % 4;
+  }
 }
 
 class Snake {
@@ -42,6 +46,10 @@ class Snake {
     this.direction.turnLeft();
   }
 
+  // turnRight() {
+  //   this.direction.turnRight();
+  // }
+
   move() {
     const [headX, headY] = this.positions[this.positions.length - 1];
     this.previousTail = this.positions.shift();
@@ -56,6 +64,7 @@ class Food {
   constructor(colId, rowId) {
     this.colId = colId;
     this.rowId = rowId;
+    
   }
 
   get position() {
@@ -68,6 +77,16 @@ class Game {
     this.snake = snake;
     this.ghostSnake = ghostSnake;
     this.food = food;
+    this.previousFood = new Food(0, 0);
+  }
+
+  ifFoodEaten() {
+    if(this.snake.positions[2][0] === this.food.position[0] && this.snake.positions[2][1] === this.food.position[1]) {
+      
+      this.previousFood = this.food;
+      this.food = generateFood();
+      this.snake.positions.unshift(this.snake.previousTail);
+    }
   }
 }
 
@@ -158,22 +177,44 @@ const  drawFood = function(food) {
   cell.classList.add('food');
 }
 
+const generateFood = function() {
+  const posX = Math.round(Math.random() * 99);
+  const posY = Math.round(Math.random() * 59);
+  
+  return new Food(posX,posY);
+}
+
+const eraseFood = function(previousFood) {
+  
+  let [colId, rowId] = previousFood.position;
+  const cell = getCell(colId, rowId);
+  cell.classList.remove('food')
+}
+
+
 const main = function() {
 
   const snake = initSnake();
   
   const ghostSnake = initGhostSnake();
 
-  const food = new Food(5,5);
+  const food = new Food(55,24);
   
   const game = new Game(snake, ghostSnake, food);
-  console.log(game);
   
   setup(game);
   drawFood(food);
+  
 
   setInterval(() => {
-    moveAndDrawSnake(snake);
+    
+    eraseFood(game.previousFood);
+    moveAndDrawSnake(game.snake);
+    game.ifFoodEaten(); 
+    drawFood(game.food);
+    
+    
+    
     moveAndDrawSnake(ghostSnake);
   }, 200);
 
