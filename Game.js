@@ -15,9 +15,10 @@ class Game {
 
   updateGame() {
     
-    if(this.isSnakeOnWall() || this.snake.isTouchedItself()) {
+    if(this.isSnakeOnWall() || this.snake.isTouchedItself() || this.isTouchedGhostSnake()) {
       alert('game Over');
     }
+
     if(this.hasFoodEaten()) {
       this.previousFood = this.food;
       this.food = generateFood();
@@ -42,4 +43,18 @@ class Game {
 
     return  snakeInColRange || snakeInRowRange;
   }
+
+  isTouchedGhostSnake() {
+    const SnakeHeadPosition = this.snake.getHeadPosition();
+    const ghostSnakeHeadPosition =this.ghostSnake.getHeadPosition();
+
+    const isSnakeTouched = this.ghostSnake.positions.some((element) => {
+      return areCellsEqual(element, SnakeHeadPosition);
+    }) 
+
+    const isGhostTouched = this.snake.positions.some((element) => {
+      return areCellsEqual(element, ghostSnakeHeadPosition);
+    }) 
+    return isSnakeTouched || isGhostTouched;
+   }  
 }

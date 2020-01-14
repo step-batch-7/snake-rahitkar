@@ -46,5 +46,7 @@ class Snake {
       return areCellsEqual(element, SnakeHeadPosition);
     })
   }
+
+  
 }
 
