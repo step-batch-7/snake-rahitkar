@@ -39,5 +39,12 @@ class Snake {
     this.positions.unshift(this.previousTail);
   }
 
+  isTouchedItself() {
+    const SnakeHeadPosition = this.getHeadPosition();
+    const SnakeBody = this.positions.slice(0,-1);
+   return SnakeBody.some((element) => {
+      return areCellsEqual(element, SnakeHeadPosition);
+    })
+  }
 }
 

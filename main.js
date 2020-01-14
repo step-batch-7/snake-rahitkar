@@ -121,6 +121,13 @@ const updateGame = function(game) {
   draw(gameStatus);
 }
 
+const areCellsEqual = function(cellOne, cellTwo) {
+  const [colOne, rowOne] = cellOne;
+  const[colTwo, rowTow] = cellTwo;
+
+  return colOne === colTwo && rowOne === rowTow;
+}
+
 const main = function() {
 
   const snake = initSnake();

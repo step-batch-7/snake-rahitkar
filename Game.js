@@ -8,13 +8,16 @@ class Game {
   }
 
   hasFoodEaten() {
-    const [snakeColId, snakeRowId] = [...this.snake.getHeadPosition()];
-    const [foodColId, foodRowId] = this.food.position;
-    
-    return snakeColId === foodColId && snakeRowId === foodRowId;
+    const snakeHeadPosition = this.snake.getHeadPosition();
+    const foodPosition = this.food.position;
+    return areCellsEqual(snakeHeadPosition, foodPosition);
   }
 
   updateGame() {
+    
+    if(this.isSnakeOnWall() || this.snake.isTouchedItself()) {
+      alert('game Over');
+    }
     if(this.hasFoodEaten()) {
       this.previousFood = this.food;
       this.food = generateFood();
@@ -29,5 +32,14 @@ class Game {
     this.updateGame();
     return {snake: this.snake, previousFood: this.previousFood, 
       food: this.food,  ghostSnake: this.ghostSnake, score: this.score};
+  }
+
+  isSnakeOnWall() {
+    const [snakeColId, snakeRowId] = [...this.snake.getHeadPosition()];
+    const snakeInColRange = snakeColId >= 99 || snakeColId <= 0;
+    const snakeInRowRange = snakeRowId >= 59 || snakeRowId <= 0;
+    console.log(snakeColId >= 100 || snakeColId >= 0);
+
+    return  snakeInColRange || snakeInRowRange;
   }
 }
