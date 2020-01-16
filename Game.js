@@ -16,7 +16,7 @@ class Game {
   updateGame() {
     
     if(this.isSnakeOnWall() || this.snake.isTouchedItself() || this.isTouchedGhostSnake()) {
-      alert('game Over');
+      return 'game Over';
     }
 
     if(this.hasFoodEaten()) {
@@ -30,16 +30,20 @@ class Game {
   }
 
   getStatus() {
-    this.updateGame();
+    if(this.updateGame()) {
+      return {snake: '', previousFood: '', 
+        food: '',  ghostSnake: '', score: '', gameStatus: 'over'};
+    }
+
     return {snake: this.snake, previousFood: this.previousFood, 
-      food: this.food,  ghostSnake: this.ghostSnake, score: this.score};
+      food: this.food,  ghostSnake: this.ghostSnake, score: this.score, gameStatus: 'not Over'};
+
   }
 
   isSnakeOnWall() {
     const [snakeColId, snakeRowId] = [...this.snake.getHeadPosition()];
     const snakeInColRange = snakeColId >= 99 || snakeColId <= 0;
     const snakeInRowRange = snakeRowId >= 59 || snakeRowId <= 0;
-    console.log(snakeColId >= 100 || snakeColId >= 0);
 
     return  snakeInColRange || snakeInRowRange;
   }

@@ -102,8 +102,18 @@ const drawScore = function(score) {
   scoreBoard.innerText = `score: ${score}`;
 };
 
-const draw = function(gameStatus) {
-  const {snake, previousFood, food, ghostSnake, score} = {...gameStatus} 
+const gameOver = function() {
+  const grid = document.getElementById('grid');
+  grid.style.opacity = 0;
+  document.getElementById('gameOver').style.opacity = 1;
+}
+const draw = function(gameSnapshot) {
+  const {snake, previousFood, food, ghostSnake, score, gameStatus} = {...gameSnapshot};
+  if(gameStatus === 'over') {
+    gameOver();
+    return ;
+  }
+
   eraseTail(snake);
   drawSnake(snake);
 
@@ -116,8 +126,7 @@ const draw = function(gameStatus) {
   drawScore(score);
 }
 
-const updateGame = function(game) {
-  const gameStatus = game.getStatus();
+const updateGame = function(gameStatus) {
   draw(gameStatus);
 }
 
@@ -142,7 +151,7 @@ const main = function() {
   drawFood(food);
   
   setInterval(() => {
-    updateGame(game);
+    updateGame(game.getStatus());
   }, 200);
 
   setInterval(() => {
@@ -152,3 +161,5 @@ const main = function() {
     }
   }, 500);
 };
+
+window.onload = main;
